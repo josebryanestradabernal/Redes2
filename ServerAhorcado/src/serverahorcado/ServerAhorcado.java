@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
  * @author Slayer
  */
 public class ServerAhorcado {
-
+  static String Adivinada="";
     /**
      * @param args the command line arguments
      */
@@ -41,10 +41,11 @@ public class ServerAhorcado {
             System.out.print("Conectado esperando seleccion de peronaje");
             PrintWriter outtext = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
             BufferedReader  inputtext =new  BufferedReader(new InputStreamReader(s.getInputStream()));
-            outtext.write("Elige una opcion\n1-Facil\n2.-Medio\n3.-Dificil\n");
+            outtext.print("Elige una opcion\n1-Facil\n2.-Medio\n3.-Dificil\n");
            outtext.flush();
-            int a = Integer.parseInt(""+inputtext.read());
-            System.out.print("La opcion elegida es: "+ a);
+           Adivinada=""; 
+           int a = Integer.parseInt(""+(char)inputtext.readLine().toCharArray()[0]);
+            System.out.println("La opcion elegida es: "+ a);
             String palabra="";
             switch (a){
                 case 1: 
@@ -58,17 +59,37 @@ public class ServerAhorcado {
                     break ; 
                 default : break ; 
             }
+            System.out.println(palabra); 
             //algoritmo para encontrar la palabra
-            String Adivinada="";
+          
             for (int i =0 ; i< palabra.length() ;i++ ){
                  if (palabra.charAt(i)!=' '){
                  Adivinada+='_';
                  }else Adivinada+=' ';
             }
+            int intentos = 5;
             
-            outtext.println(Adivinada);
+            outtext.println(Adivinada+"intentos"+5);
             outtext.flush();
-            
+            while (intentos>0){
+                String aux= inputtext.readLine();
+                System.out.println(aux);
+                if (encontrar(palabra,aux.charAt(0))==0){
+                        intentos--;}
+                outtext.println(Adivinada+" intentos "+intentos);
+                outtext.flush();
+                if (!Adivinada.contains("_"))
+                    break;
+         
+                
+            }
+            //flag de fin del juego
+                outtext.println("0");
+                outtext.flush();
+                //final
+                outtext.println("Game over: "+(intentos==0?"Perdiste":"ganaste"));
+                outtext.flush();
+                System.out.println("final");
             }
             
         }catch (IOException e){
@@ -76,7 +97,15 @@ public class ServerAhorcado {
         }
         
     }
-    private int encontrar (){
-        
-       return 0; }
+    private static int encontrar (String palabra,char letra){
+       int flag =0; //cuenta la cantidad de letras que coinciden 
+       char temp[]= Adivinada.toCharArray();
+       for (int i =0 ; i< palabra.length();i++){
+        if (Character.toLowerCase(letra)==Character.toLowerCase(palabra.charAt(i))){
+             temp[i]=palabra.charAt(i);
+             flag ++; 
+        }
+        Adivinada=new String(temp);
+       }
+       return flag; }
 }
