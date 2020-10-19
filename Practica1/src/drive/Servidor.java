@@ -26,7 +26,7 @@ public class Servidor {
                 System.out.println("Cliente conectado desde " + cl.getInetAddress() + ":" + cl.getPort());
                 PrintWriter outtext = new PrintWriter(new OutputStreamWriter(cl.getOutputStream()));
                 BufferedReader inputtext = new BufferedReader(new InputStreamReader(cl.getInputStream()));
-                outtext.print("Elige una opcion\n1-Ver Archivos\n2.-Subir archivos\n3.-\n4.-Salir.\n");
+                outtext.print("Elige una opcion\n1-Ver Archivos\n2.-Subir archivos\n3.-Descargar Archivo\n4.-Salir.\n");
                 outtext.flush();
 
                 switch (Integer.parseInt("" + (char) inputtext.readLine().toCharArray()[0])) {
@@ -69,6 +69,36 @@ public class Servidor {
                         }
                         break;
                     case 3:
+                                String nombre = inputtext.readLine();
+                                String path = ruta_archivos +"\\"+ nombre;  
+                                File file = new File(path);
+                                Boolean a =  file.exists();
+                                outtext.println(a);
+                                outtext.flush();
+                                if (a){
+                                    long tam = file.length();
+                                System.out.println(
+                                        "Preparandose pare enviar archivo " + path + " de " + tam + " bytes\n");
+                                DataOutputStream dos = new DataOutputStream(cl.getOutputStream());
+                                DataInputStream dis = new DataInputStream(new FileInputStream(path));
+                                dos.writeUTF(nombre);
+                                dos.flush();
+                                dos.writeLong(tam);
+                                dos.flush();
+                                long enviados = 0;
+                                int l = 0, porcentaje = 0;
+                                while (enviados < tam) {
+                                    byte[] b = new byte[1500];
+                                    l = dis.read(b);
+                                    System.out.println("enviados: " + l);
+                                    dos.write(b, 0, l);
+                                    dos.flush();
+                                    enviados = enviados + l;
+                                    porcentaje = (int) ((enviados * 100) / tam);
+                                    System.out.print("\rEnviado el " + porcentaje + " % del archivo");
+                                } // while
+                                System.out.println("\nArchivo enviado...\n");}
+                                else System.out.println("El archivo no existe que sad");
                         break;
                     default:
                         break;

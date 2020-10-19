@@ -69,6 +69,39 @@ public class Cliente {
 
                         break;
                     case 3:
+                        
+                        System.out.println("Descargar Archivo: ");
+                        String file = br.readLine();
+                        outtext.println(file);
+                        outtext.flush();
+                        String a = br1.readLine();
+                        System.out.println(a);
+                        if (a.equals("true")){
+                              jf = new JFileChooser ();
+                             int jfValue = jf.showOpenDialog(null);
+                             String ruta_archivos = jf.getSelectedFile().getParent();
+                             
+                             DataInputStream dis = new DataInputStream(cl.getInputStream());
+                            String nombre = dis.readUTF();
+                            long tam = dis.readLong();
+                            System.out.println("Comienza descarga del archivo " + nombre + " de " + tam + " bytes\n\n");
+                            DataOutputStream dos = new DataOutputStream(new FileOutputStream(ruta_archivos +"\\"+ nombre));
+                            long recibidos = 0;
+                            int l = 0, porcentaje = 0;
+                            while (recibidos < tam) {
+                                byte[] b = new byte[1500];
+                                l = dis.read(b);
+                                System.out.print("leidos: " + l);
+                                dos.write(b, 0, l);
+                                dos.flush();
+                                recibidos = recibidos + l;
+                                porcentaje = (int) ((recibidos * 100) / tam);
+                                System.out.println(" Recibido el " + porcentaje + " % del archivo");
+                            } // while
+                            System.out.println("Archivo recibido...\n");
+                            dos.close();
+                            dis.close();
+                        }
                         break;
                     case 4:
                         cl.close();
