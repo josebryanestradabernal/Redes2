@@ -82,8 +82,6 @@ public class Servidor {
                             }
                         }
                         break;
-                    case 2:
-                        break;
                     case 3:
                         break;
                     default:

@@ -77,6 +77,7 @@ public class Cliente {
                                         outtext.println(Integer.toString(cantidad));
                                         outtext.flush();
                                         ItemCarrito nuevo = new ItemCarrito(item.getNombre(),item.getPrecio(),cantidad);
+                                        carrito.add(nuevo);
                                         monto=monto+nuevo.getMonto();
                                         System.out.println("Item Agregado al carrito! :)\n");
                                         cl.close();
@@ -99,10 +100,20 @@ public class Cliente {
                         cl.close();
                         break;
                     case 2:
-                        
+                        if(carrito.size()>0){
+                            for(int i=0;i<carrito.size();i++){
+                            System.out.println("Nombre:"+carrito.get(i).getProducto()+"\n"+
+                                                "Cantidad:"+carrito.get(i).getCantidad()+"\n"+
+                                                "Monto:"+carrito.get(i).getMonto()+"\n");
+                        }
+                        System.out.println("Total:"+monto+"\n");
                         cl.close();
-
                         break;
+                        }else{
+                            System.out.println("No hay items en el carrito aún!\n");
+                            cl.close();
+                            break;
+                        }
                     case 3:
                         
                         break;

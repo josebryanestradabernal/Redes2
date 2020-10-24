@@ -4,7 +4,6 @@ public class ItemCarrito {
     private String Producto;
     private float Precio;
     private int Cantidad;
-    private float Monto=0;
     
     public ItemCarrito(String Producto,float Precio,int Cantidad){
         this.Producto=Producto;
@@ -37,12 +36,7 @@ public class ItemCarrito {
     }
 
     public float getMonto() {
-        return Monto*Cantidad;
+        return Precio*Cantidad;
     }
-
-    public void setMonto(float Monto) {
-        this.Monto = Monto;
-    }
-    
     
 }
