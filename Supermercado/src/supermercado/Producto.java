@@ -77,6 +77,10 @@ public class Producto implements Serializable{
         this.existencias = existencias;
     }
     
+    public void decrementarExistencias(int existencias){
+        this.existencias=this.existencias-existencias;
+    }
+    
     public Producto(String nombre,String id, String descripcion,int existencias,
                     float precio,int promocion,Date vigencia,String[] imagenes){
         this.nombre=nombre;
