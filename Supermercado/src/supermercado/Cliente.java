@@ -66,6 +66,8 @@ public class Cliente {
                             case "1":
                                 outtext.print("1");
                                 outtext.flush();
+                                new MostrarImagenes().show();
+
                                 break;
                             case "2":
                                 outtext.println("2");
@@ -115,7 +117,6 @@ public class Cliente {
                             break;
                         }
                     case 3:
-                        
                         break;
                     case 4:
                         cl.close();
