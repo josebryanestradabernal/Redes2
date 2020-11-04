@@ -1,6 +1,8 @@
 package supermercado;
 
-public class ItemCarrito {
+import java.io.Serializable;
+
+public class ItemCarrito implements Serializable{
     private String Producto;
     private float Precio;
     private int Cantidad;

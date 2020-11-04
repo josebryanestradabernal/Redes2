@@ -1,8 +1,12 @@
 package supermercado;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 public class Cliente {
@@ -64,10 +68,23 @@ public class Cliente {
                         System.out.println("1.- Ver Imágenes\n2.- Agregar al carrito.");
                         switch(br.readLine()){
                             case "1":
-                                outtext.print("1");
+                               outtext.print("1");
                                 outtext.flush();
-                                new MostrarImagenes().show();
-
+                                MostrarImagenes mi = new MostrarImagenes();
+                                String a[]= item.getImagenes();
+                                String path="./productos/";
+                           
+                                for (int i =0 ;i<a.length; i++){
+                                    javax.swing.JLabel label = new javax.swing.JLabel();
+                                    Image r = new ImageIcon(path+a[i]).getImage();
+                                    r=r.getScaledInstance(150, 150,  java.awt.Image.SCALE_SMOOTH);
+                                    label.setIcon(new ImageIcon(r));
+                                    label.setVisible(true);
+                                    label.setBounds(10, (i)*150, 150, 150);
+                                    mi.add(label);
+                                }
+                                    
+                                  mi.show();
                                 break;
                             case "2":
                                 outtext.println("2");
@@ -117,6 +134,18 @@ public class Cliente {
                             break;
                         }
                     case 3:
+                        for (int i =0; i<carrito.size();i++){
+                            System.out.println("Nombre:"+carrito.get(i).getProducto()+"\n"+
+                                                "Cantidad:"+carrito.get(i).getCantidad()+"\n"+
+                                                "Monto:"+carrito.get(i).getMonto()+"\n");
+                        }
+                        System.out.println("Total:"+monto+"\n");
+                        
+                        ObjectOutputStream oos = new ObjectOutputStream(cl.getOutputStream());
+                        oos.writeObject(carrito.clone());
+                        oos.flush();
+                        cl.close();
+                        carrito.clear();
                         break;
                     case 4:
                         cl.close();
