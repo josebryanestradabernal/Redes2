@@ -1,6 +1,8 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ServidorWeb
 {
@@ -40,10 +42,10 @@ public class ServidorWeb
 					System.out.println("Por el puerto: "+socket.getPort());
 					System.out.println("Datos: "+line+"\r\n\r\n");
 					
-					if(line.indexOf("?")==-1)
+					if(line.indexOf("?")==-1 )
 					{
 						getArch(line);
-						if(FileName.compareTo("")==0)
+						if( FileName.compareTo("")==0)
 						{
 							SendA("index.htm");
 						}
@@ -62,7 +64,7 @@ public class ServidorWeb
 						String req=tokens.nextToken();
 						System.out.println("Token1: "+req_a+"\r\n\r\n");
 						System.out.println("Token2: "+req+"\r\n\r\n");
-						pw.println("HTTP/1.0 200 Okay");
+						pw.println("HTTP/1.1 200 Okay");
 						pw.flush();
 						pw.println();
 						pw.flush();
@@ -74,7 +76,46 @@ public class ServidorWeb
 						pw.flush();
 						pw.print("</center></body></html>");
 						pw.flush();
+                                                 System.out.print("get peticion");
 					}
+                                        else if (line.toUpperCase().startsWith("HEAD")){
+                                            StringTokenizer tokens=new StringTokenizer(line,"?");
+						String req_a=tokens.nextToken();
+						String req=tokens.nextToken();
+						System.out.println("Token1: "+req_a+"\r\n\r\n");
+						System.out.println("Token2: "+req+"\r\n\r\n");
+						String sb = "";
+                                                sb = sb+"HTTP/1.0 200 ok\n";
+                                                sb = sb +"Server: Bryan Server/1.0 \n";
+                                                sb = sb +"Date: " + new Date()+" \n";
+                                                sb = sb +"Content-Type: text/html \n";
+                                                sb = sb +"Content-Length: "+req_a.length()+" \n";
+                                                sb = sb +"\n";
+                                                pw.print(sb);
+                                                pw.flush();
+                                                        
+    
+                                        }
+                                        else if (line.toUpperCase().startsWith("DELETE")){
+                                            System.out.print("delete request");
+                                            StringTokenizer tokens=new StringTokenizer(line,"?");
+						String req_a=tokens.nextToken();
+						String req=tokens.nextToken();
+                                          pw.println("HTTP/1.1 200 Okay");
+						pw.flush();
+						pw.println();
+						pw.flush();
+						pw.print("<html><head><title>SERVIDOR WEB");
+						pw.flush();
+						pw.print("</title></head><body bgcolor=\"#AACCFF\"><center><h1><br>Parametros Obtenidos..</br></h1>");
+						pw.flush();
+						pw.print("<h3><b>se borro la siguiente información:"+req+"</b></h3>");
+						pw.flush();
+						pw.print("</center></body></html>");
+						pw.flush();
+						pw.println();
+                                            
+                                        }
 					else
 					{
 						pw.println("HTTP/1.0 501 Not Implemented");
@@ -102,6 +143,12 @@ public class ServidorWeb
 				int f;
 				if(line.toUpperCase().startsWith("GET"))
 				{
+					i=line.indexOf("/");
+					f=line.indexOf(" ",i);
+					FileName=line.substring(i+1,f);
+				}
+                                if (line.toUpperCase().startsWith("HEAD"))
+                                    {
 					i=line.indexOf("/");
 					f=line.indexOf(" ",i);
 					FileName=line.substring(i+1,f);
@@ -193,10 +240,13 @@ public class ServidorWeb
 			this.ss=new ServerSocket(PUERTO);
 			System.out.println("Servidor iniciado:---OK");
 			System.out.println("Esperando por Cliente....");
+                        ExecutorService executor = Executors.newFixedThreadPool(100);
 			for(;;)
 			{
 				Socket accept=ss.accept();
-				new Manejador(accept).start();
+                                Manejador m = new Manejador(accept);
+                                executor.execute(m);
+				
 			}
 		}
 		
