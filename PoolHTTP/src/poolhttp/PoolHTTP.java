@@ -61,17 +61,87 @@ class Processor implements Runnable{
                 directorio.getParentFile().mkdirs();
                 directorio.createNewFile();
             }
-            listaurls.add(new URLs(url,directorio.getPath()));
+            URLs actual = new URLs(url,directorio.getPath());
+            listaurls.add(actual);
             FileOutputStream fos = new FileOutputStream(directorio);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
             URLConnection connection = url.openConnection();
             BufferedReader in = new BufferedReader(new InputStreamReader(
                                     connection.getInputStream()));
             String inputLine;
+            String img;
             while ((inputLine = in.readLine()) != null){
+                int x = inputLine.indexOf("<a ");
+                if(x!=-1){
+                    String aux1;
+                    String aux2;
+                    int y = inputLine.indexOf("href",x)+6;
+                    aux1=inputLine.substring(0,y);
+                    int z = inputLine.indexOf("\"",y);
+                    if(y!=-1){
+                        aux2=inputLine.substring(z);
+                        img = inputLine.substring(y,z);
+                        if(img.indexOf("http")!=-1){
+                            for(int i =0;i<listaurls.size();i++){
+                                if(img.equals(listaurls.get(i).getUrl().toString())){
+                                    img=listaurls.get(i).getDirectorio();
+                                    int slash = img.lastIndexOf("\\");
+                                    int slash2 = actual.getDirectorio().lastIndexOf("\\");
+                                    String archivo =img.substring(slash);
+                                    String rutaaux = actual.getDirectorio().substring(0,slash2);
+                                    String ruttaux2 = img;
+                                    ruttaux2=ruttaux2.substring(0,slash);
+                                    //img=img.substring(0,slash);
+                                    if(rutaaux.equals(ruttaux2+"\\")){
+                                        img="./"+archivo;
+                                    }else{
+                                        if(ruttaux2.contains(rutaaux)){
+                                            img=img.substring(rutaaux.length());
+                                            String array[];
+                                            array=img.split("\\\\");
+                                            img=".";
+                                            for(String folder:array){
+                                                img=img+folder+"/";
+                                            }
+                                            img=img.substring(0,img.length()-1);
+                                        }else{
+                                            String aux="";
+                                            img="..";
+                                            int xd=rutaaux.lastIndexOf("\\");
+                                            while(xd!=-1&&!ruttaux2.contains(rutaaux)
+                                                    &&!ruttaux2.equals(rutaaux)){
+                                                xd=rutaaux.lastIndexOf("\\");
+                                                if(xd!=-1){
+                                                    rutaaux = rutaaux.substring(0,xd);
+                                                    aux=aux+"../";
+                                                }
+                                            }
+                                            if(ruttaux2.contains(rutaaux)){
+                                                String array[];
+                                                ruttaux2=ruttaux2.substring(rutaaux.length());
+                                                array = ruttaux2.split("\\\\");
+                                                for(String folder:array){
+                                                    img=aux+folder+"/";
+                                                }
+                                                img=img+archivo.substring(1);
+                                            }else{
+                                                System.out.println(rutaaux);
+                                                System.out.println(ruttaux2);
+                                                img="../"+aux+ruttaux2+archivo;
+                                            }
+                                        }
+                                    }
+                                    
+                                }
+                            }
+                            inputLine=aux1+img+aux2;
+                        }
+                    }
+                }
                 bw.write(inputLine+"\n");
             }
             in.close();
+            bw.close();
         } catch (MalformedURLException ex) {
             //Logger.getLogger(Panel1.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -119,7 +189,7 @@ private final JLabel JLabel1 = new JLabel("Introduce una URL");
         }
         try{
             url = new URL(URLField.getText());
-            this.pool.execute(new Processor(url,urls));
+            //this.pool.execute(new Processor(url,urls));
             URLConnection connection = url.openConnection();
             BufferedReader in = new BufferedReader(new InputStreamReader(
                                     connection.getInputStream()));
@@ -133,7 +203,7 @@ private final JLabel JLabel1 = new JLabel("Introduce una URL");
                     if(y!=-1){
                         img = inputLine.substring(y,z);
                         if(img.indexOf("http")!=-1){
-                            System.out.println(img);
+                            //System.out.println(img);
                             int flag=0;
                             for(int i=0;i<urls.size();i++){
                                 if(img.equals(urls.get(i).getUrl().toString())){
@@ -157,7 +227,7 @@ private final JLabel JLabel1 = new JLabel("Introduce una URL");
                                         if(m!=-1){
                                             img2 = inputLine2.substring(m,g);
                                             if(img2.indexOf("http")!=-1){
-                                                System.out.println(img2);
+                                                //  System.out.println(img2);
                                                 int flag2=0;
                                                 for(int i=0;i<urls.size();i++){
                                                     if(img2.equals(urls.get(i).getUrl().toString())){
@@ -172,12 +242,15 @@ private final JLabel JLabel1 = new JLabel("Introduce una URL");
                                         }
                                     }
                                 }
+                                in2.close();
                             }
                         }
                     }
                 }
             }
+            this.pool.execute(new Processor(url,urls));
             in.close();
+            this.pool.shutdown();
         }catch (MalformedURLException ex) {
             JOptionPane.showMessageDialog(null,"URL Inválido...");
         } catch (IOException ex) {
