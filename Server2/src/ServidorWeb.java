@@ -42,7 +42,7 @@ public class ServidorWeb
 					System.out.println("Por el puerto: "+socket.getPort());
 					System.out.println("Datos: "+line+"\r\n\r\n");
 					
-					if(line.indexOf("?")==-1 )
+					if(line.indexOf("?")==-1 && !line.toUpperCase().startsWith("DELETE"))
 					{
 						getArch(line);
 						if( FileName.compareTo("")==0)
@@ -100,16 +100,20 @@ public class ServidorWeb
                                             System.out.print("delete request");
                                             StringTokenizer tokens=new StringTokenizer(line,"?");
 						String req_a=tokens.nextToken();
-						String req=tokens.nextToken();
+						//String req=tokens.nextToken();
+                                                req_a= req_a.replaceAll("DELETE /", "");
+                                                req_a= req_a.replaceAll(" HTTP/1.1", "");
+                                                File fichero = new File(req_a);
+                                                fichero.delete();
                                           pw.println("HTTP/1.1 200 Okay");
 						pw.flush();
 						pw.println();
 						pw.flush();
 						pw.print("<html><head><title>SERVIDOR WEB");
 						pw.flush();
-						pw.print("</title></head><body bgcolor=\"#AACCFF\"><center><h1><br>Parametros Obtenidos..</br></h1>");
+						pw.print("</title></head><body bgcolor=\"#AACCFF\"><center><h1><br></br></h1>");
 						pw.flush();
-						pw.print("<h3><b>se borro la siguiente información:"+req+"</b></h3>");
+						pw.print("<h3><b>se borro la siguiente información:"+req_a+"</b></h3>");
 						pw.flush();
 						pw.print("</center></body></html>");
 						pw.flush();
