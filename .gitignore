@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 /Supermercado/build/
 /Supermercado/nbproject/private/
 /Practica1/build/
 /Supermercado/dist/
+=======
+/AhorcadoServer/nbproject/private/
+/AhorcadoServer/build/
+/AhorcadoServer/dist/
+/ServerAhorcado/nbproject/private/
+/ServerAhorcado/build/
+/ServerAhorcado/dist/
+>>>>>>> ed76fa0730e91380b875f55cc27db2cec2414fe2
